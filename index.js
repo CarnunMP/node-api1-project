@@ -12,6 +12,7 @@ server.get("/api/users/:id", getUserById);
 server.get("/api/users", getAllUsers);
 server.post("/api/users", createNewUser);
 server.delete("/api/users/:id", deleteUserById);
+server.put("/api/users/:id", modifyUserById);
 server.get("*", handleDefaultReq);
 
 function getUserById(req, res) {
@@ -83,6 +84,34 @@ function deleteUserById(req, res) {
             console.log(deleted);
             if (deleted) {
                 res.status(204).end();
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: "Cannot find specified user.",
+                });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                success: false,
+                err,
+            });
+        });
+}
+
+function modifyUserById(req, res) {
+    const { id } = req.params;
+    const changes = req.body;
+
+    db.update(id, changes)
+        .then(count => {
+            console.log(count)
+            if (count) {
+                res.status(200).json({
+                    success: true,
+                    count,
+                })
             } else {
                 res.status(404).json({
                     success: false,
