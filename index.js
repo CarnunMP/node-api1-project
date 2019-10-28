@@ -10,6 +10,7 @@ server.use(cors());
 
 server.get("/api/users/:id", getUserById);
 server.get("/api/users", getAllUsers);
+server.post("/api/users", createNewUser);
 server.get("*", handleDefaultReq);
 
 function getUserById(req, res) {
@@ -27,6 +28,22 @@ function getAllUsers(req, res) {
     db.find()
         .then(data => {
             console.log(data);
+            res.json(data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function createNewUser(req, res) {
+    const newUser = {
+        name: req.body.name,
+        bio: req.body.bio || "",
+    }
+
+    db.insert(newUser)
+        .then(data => {
+            console.log("id of new user: " + data.id);
             res.json(data);
         })
         .catch(err => {
