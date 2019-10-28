@@ -14,10 +14,11 @@ server.get("*", handleDefaultReq);
 function getAllUsers(req, res) {
     db.find()
         .then(data => {
-            //
+            console.log(data);
+            res.json(data);
         })
         .catch(err => {
-            //
+            console.log(err);
         })
 }
 
