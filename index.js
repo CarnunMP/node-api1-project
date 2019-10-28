@@ -50,7 +50,7 @@ function getAllUsers(req, res) {
 }
 
 function createNewUser(req, res) {
-    if (!req.body.name || !req.body.user) {
+    if (!req.body.name || !req.body.bio) {
         res.status(400).json({
             errorMessage: "Please provide name and bio for the user."
         });
@@ -94,7 +94,7 @@ function modifyUserById(req, res) {
     const { id } = req.params;
     const changes = req.body;
 
-    if (!changes.name || !changes.body) {
+    if (!changes.name || !changes.bio) {
         res.status(400).json({
             errorMessage: "Please provide name and bio for the user."
         });
