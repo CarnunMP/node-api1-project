@@ -17,85 +17,75 @@ server.get("*", handleDefaultReq);
 
 function getUserById(req, res) {
     db.findById(req.params.id)
-        .then(data => {
-            console.log(data);
-            if (data) {
+        .then(user => {
+            if (user) {
                 res.status(200).json({
                     success: true,
-                    data
+                    user
                 });
             } else {
-                res.status(404).json({
-                    success: false,
-                    message: "Cannot find specified user.",
-                })
+                res.status(404).json({ 
+                    message: "The user with the specified ID does not exist."
+                });
             }
         })
         .catch(err => {
-            console.log(err);
             res.status(500).json({
                 success: false,
-                err,
+                error: "The user information could not be retrieved.",
             });
         });
 }
 
 function getAllUsers(req, res) {
     db.find()
-        .then(data => {
-            console.log(data);
-            res.status(200).json(data);
+        .then(users => {
+            res.status(200).json(users);
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                success: false,
-                err,
+            res.status(500).json({ 
+                error: "The users information could not be retrieved." 
             });
         });
 }
 
 function createNewUser(req, res) {
-    const newUser = {
-        name: req.body.name,
-        bio: req.body.bio || "",
-    }
-
-    db.insert(newUser)
+    if (!req.body.name || !req.body.user) {
+        res.status(400).json({
+            errorMessage: "Please provide name and bio for the user."
+        });
+    } else {
+        const newUser = {
+            name: req.body.name,
+            bio: req.body.bio,
+        }
+        
+        db.insert(newUser)
         .then(data => {
-            console.log("id of new user: " + data.id);
-            res.status(201).json({
-                success: true,
-                data,
-            });
+            res.status(201).json(data);
         })
         .catch(err => {
-            console.log(err);
             res.status(500).json({
-                success: false,
-                err,
+                error: "There was an error while saving the user to the database"
             });
         });
+    }
 }
-
+    
 function deleteUserById(req, res) {
     db.remove(req.params.id)
         .then(deleted => {
-            console.log(deleted);
             if (deleted) {
                 res.status(204).end();
             } else {
-                res.status(404).json({
-                    success: false,
-                    message: "Cannot find specified user.",
+                res.status(404).json({ 
+                    message: "The user with the specified ID does not exist." 
                 });
             }
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                success: false,
-                err,
+            res.status(500).json({ 
+                error: "The user could not be removed" 
             });
         });
 }
@@ -104,28 +94,27 @@ function modifyUserById(req, res) {
     const { id } = req.params;
     const changes = req.body;
 
-    db.update(id, changes)
+    if (!changes.name || !changes.body) {
+        res.status(400).json({
+            errorMessage: "Please provide name and bio for the user."
+        });
+    } else {        
+        db.update(id, changes)
         .then(count => {
-            console.log(count)
             if (count) {
-                res.status(200).json({
-                    success: true,
-                    count,
-                })
+                res.status(200).json(count);
             } else {
                 res.status(404).json({
-                    success: false,
-                    message: "Cannot find specified user.",
+                    message: "The user with the specified ID does not exist."
                 });
             }
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                success: false,
-                err,
+            res.status(500).json({ 
+                error: "The user information could not be modified."
             });
         });
+    }
 }
 
 function handleDefaultReq(req, res) {
