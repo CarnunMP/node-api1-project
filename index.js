@@ -8,8 +8,20 @@ const server = express();
 server.use(express.json());
 server.use(cors());
 
+server.get("/api/users/:id", getUserById);
 server.get("/api/users", getAllUsers);
 server.get("*", handleDefaultReq);
+
+function getUserById(req, res) {
+    db.findById(req.params.id)
+        .then(data => {
+            console.log(data);
+            res.json(data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
 
 function getAllUsers(req, res) {
     db.find()
